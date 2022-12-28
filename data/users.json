@@ -1,0 +1,29 @@
+[
+    {
+        "id":1,
+        "email":"frank@frank.com",
+        "password":"frank101",
+        "repassword":"frank101",
+        "first_name":"Frank",
+        "last_name":"Guy",
+        "phone_number":"123-456-7890"
+    },
+    {
+        "id":2,
+        "email":"blank@blrank.com",
+        "password":"blank101",
+        "repassword":"blank101",
+        "first_name":"Blank",
+        "last_name":"Fly",
+        "phone_number":"124-356-7890"
+    },
+    {
+        "id":3,
+        "email":"dave@dave.com",
+        "password":"dave101",
+        "repassword":"dave101",
+        "first_name":"Dave",
+        "last_name":"Man",
+        "phone_number":"132-456-7890"
+    }
+]
