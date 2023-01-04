@@ -1,20 +1,12 @@
 const express = require("express");
+const UsersController = require('../controllers/usersController')
+const {passwordsMatch, isNewUser, hashPwd, isNoNewUser} = require('../middleware/middleware')
 
 const router = express.Router();
-router.get('/users',(req,res)=>{
-  res.send('getting users');
-  console.log('Bye')
-})
-  router.post("/login", (req, res) => {
-    console.log(req.body)
-    res.send('Login');
-  });
+router.post('/signup', passwordsMatch, isNewUser,hashPwd, UsersController.addNewUser)
 
-  router.post("/signup", (req, res) => {
-    console.log(req.body)
-    res.send('Signup');
-  });
-  
+router.post('/login',  isNoNewUser, UsersController.loginUser)
+router.get('/:id', UsersController.getUser)
 
   
   module.exports = router;

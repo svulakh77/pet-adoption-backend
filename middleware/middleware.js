@@ -1,70 +1,71 @@
-'use strict'
+const bcrypt = require('bcrypt');
+const e = require('express');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const { getUserByEmailModel } = require('../models/userModel');
 
-const { User } = require('../models')
+const passwordsMatch = (req, res, next) => {
+  const { password, repassword } = req.body;
+  if (password !== repassword) {
+    res.status(400).send("Passwords don't match");
+    return;
+  }
 
-const postUsers = (req, res, next) => {
-  const props = req.body.user
+  next();
+};
 
-  User.create(props)
-    .then(user => res.json({
-      ok: true,
-      message: 'User created',
-      user
-    }))
-    .catch(next)
-}
+const isNewUser = async (req, res, next) => {
+  const user = await getUserByEmailModel(req.body.email);
+  if (user) {
+    res.status(400).send('User already exists');
+    return;
+  }
+  next();
+};
+const isNoNewUser = async (req, res, next) => {
+    const user = await getUserByEmailModel(req.body.email);
+    if (!user) {
+      res.status(400).send('This user/email does not exist');
+      return;
+    }
+    req.body.user = user
+    next();
+  };
 
-const getUsers = (req, res, next) => {
-  User.findAll()
-    .then(users => res.json({
-      ok: true,
-      message: 'Users found',
-      users
-    }))
-    .catch(next)
-}
+const hashPwd = (req, res, next) => {
+  const saltRounds = 10;
+  bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+    if (err) {
+      res.status(500).send(err);
+      return;
+    }
 
-const getUser = (req, res, next) => {
-  const userId = req.params.id
+    req.body.password = hash;
+    req.body.repassword = hash;
+    next();
+  });
+};
 
-  User.findById(userId)
-    .then(user => res.json({
-      ok: true,
-      message: 'User found',
-      user
-    }))
-    .catch(next)
-}
 
-const putUser = (req, res, next) => {
-  const userId = req.params.id
-  const props = req.body.user
 
-  User.update(userId, props)
-    .then(user => res.json({
-      ok: true,
-      message: 'User updated',
-      user
-    }))
-    .catch(next)
-}
+const auth = (req, res, next) => {
+  console.log(req.headers.authorization);
+  if (!req.headers.authorization) {
+    res.status(401).send('Authorization headers required');
+    return;
+  }
+  const token = req.headers.authorization.replace('Bearer ', '');
+  jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      res.status(401).send('Unauthorized');
+      return;
+    }
 
-const deleteUser = (req, res, next) => {
-  const userId = req.params.id
+    if (decoded) {
+      req.body.userId = decoded.id;
+      next();
+    }
+  });
+};
 
-  User.destroy(userId)
-    .then(deleteCount => res.json({
-      ok: true,
-      message: `User '${ userId }' deleted`,
-      deleteCount
-    }))
-    .catch(next)
-}
-
-module.exports = {
-  postUsers,
-  getUsers,
-  getUser,
-  putUser,
-  deleteUser
-}
+module.exports = { passwordsMatch, isNewUser, hashPwd, auth, isNoNewUser };

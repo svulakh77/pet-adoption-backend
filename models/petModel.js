@@ -1,5 +1,5 @@
 const path = require('path');
-const pathToPetsDB = path.resolve(__dirname, '../database/petsDB.json');
+const pathToPetsDB = path.resolve(__dirname, '../migrations/petMigration');
 const dbConnection = require('../knex/knex')
 
 

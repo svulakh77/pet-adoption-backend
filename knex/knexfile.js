@@ -1,5 +1,5 @@
 const path = require('path');
-// require('dotenv').config();
+require('dotenv').config();
 const pathToMigrations = path.resolve(__dirname, '../migrations');
 
 module.exports = {
