@@ -2,12 +2,17 @@ const bcrypt = require('bcrypt');
 const e = require('express');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
+const path = require('path')
+const pathToImages = path.resolve(__dirname, '../images');
 const { getUserByEmailModel } = require('../models/userModel');
 
 const passwordsMatch = (req, res, next) => {
   const { password, repassword } = req.body;
   if (password !== repassword) {
-    res.status(400).send("Passwords don't match");
+    res.status(400).send("Password is incorrect");
     return;
   }
 
@@ -50,12 +55,13 @@ const hashPwd = (req, res, next) => {
 
 const auth = (req, res, next) => {
   console.log(req.headers.authorization);
+  console.log(req.headers)
   if (!req.headers.authorization) {
-    res.status(401).send('Authorization headers required');
+    res.status(401).send('Missing token');
     return;
   }
   const token = req.headers.authorization.replace('Bearer ', '');
-  jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
     if (err) {
       res.status(401).send('Unauthorized');
       return;
@@ -67,5 +73,32 @@ const auth = (req, res, next) => {
     }
   });
 };
+cloudinary.config({ 
+    cloud_name: 'dm4rue7fk', 
+    api_key: '882889117265694', 
+    api_secret: 'G06uyjrw0LUjpFvQext2l9fe78Q' 
+  });
 
-module.exports = { passwordsMatch, isNewUser, hashPwd, auth, isNoNewUser };
+  const cloudStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    },
+  });
+  
+  
+  const upload = multer({ storage: cloudStorage });
+
+
+
+  const generateUrl = (req, res, next) => {
+    console.log(req.file.filename)
+    const pic = `http://localhost:8080/${req.file.filename}`
+    req.body.pic = pic;
+
+
+    next()
+
+  }
+module.exports = { passwordsMatch, isNewUser, hashPwd, auth, isNoNewUser};

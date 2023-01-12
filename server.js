@@ -1,8 +1,7 @@
 const express = require("express");
 const dbConnection = require('./knex/knex');
 const app = express();
-const dotenv = require('dotenv');
-const jwt = require('jsonwebtoken');
+
 
 
 const PORT = process.env.PORT || 8080;

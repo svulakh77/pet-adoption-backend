@@ -5,10 +5,10 @@ const pathToMigrations = path.resolve(__dirname, '../migrations');
 module.exports = {
   client: 'mysql2',
   connection: {
-    database: 'petAdoption',
-    user: 'root',
-    password: 'Sheva77!',
-    host: 'localhost',
+    database: process.env.DATABASE_NAME,
+    user: process.env.DATABASE_USER,
+    password: process.env.SQL_PASSWORD,
+    host: process.env.HOST,
   },
   pool: {
     min: 2,

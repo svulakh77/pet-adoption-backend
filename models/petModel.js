@@ -11,9 +11,17 @@ async function readAllPetsModel() {
     console.log(err);
   }
 }
-
+async function getPetByIdModel(petId) {
+  try {
+    const fetchedPet = await dbConnection.from('pets').where({id:petId})
+    return fetchedPet
+  } catch (err) {
+    console.log(err);
+  }
+}
 async function addPetModel(newPet) {
   try {
+    console.log(newPet)
     const [id] = await dbConnection.from('pets').insert(newPet)
     return id;
   } catch (err) {
@@ -31,4 +39,4 @@ async function deletePetModel(petId) {
   }
 }
 
-module.exports = { readAllPetsModel, addPetModel, deletePetModel };
+module.exports = { readAllPetsModel, addPetModel, deletePetModel,getPetByIdModel };

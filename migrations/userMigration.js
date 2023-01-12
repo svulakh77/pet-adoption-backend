@@ -7,7 +7,8 @@ exports.up = function (knex) {
       table.string('firstName').notNull();
       table.string('lastName').notNull();
       table.string('phoneNumber').notNull();
-    //   table.boolean("isAdmin");
+      table.boolean("isAdmin");
+      table.string('bio');
       table.timestamp('dateCreated').defaultTo(knex.fn.now());
     });
   };

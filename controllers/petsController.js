@@ -1,10 +1,14 @@
-const { deletePetModel, readAllPetsModel, addPetModel } = require('../models/petModel');
+const {
+  deletePetModel,
+  readAllPetsModel,
+  addPetModel,
+} = require("../models/petModel");
 
-const deletePet = async(req, res) => {
+const deletePet = async (req, res) => {
   const { petId } = req.params;
   const deleted = await deletePetModel(petId);
   if (deleted) {
-    res.send({ ok: true, deletedId: petId});
+    res.send({ ok: true, deletedId: petId });
   }
 };
 
@@ -32,5 +36,15 @@ const getAllPets = async (req, res) => {
     res.status(500).send(err);
   }
 };
+const getPetById = async (req, res) => {
+  try {
+    const { petId } = req.params;
+    const gotPet = await getPetById(petId);
+    res.send(gotPet);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+};
 
-module.exports = { deletePet, addCountry, getAllPets };
+module.exports = { deletePet, addPet, getAllPets,getPetById };

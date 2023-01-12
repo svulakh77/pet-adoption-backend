@@ -1,37 +1,27 @@
 const express = require("express");
-
+const petController = require("../controllers/petsController")
+// const { auth } = require('../middleware/middleware');
 const router = express.Router();
+const {upload,auth,generateUrl}=require("../middleware/middleware")
 
-router.get("/pets", (req, res) => {
+router.get("/", petController.getAllPets);
 //   The get pets API is responsible for retrieving pets that match the criteria given.
 // Can receive query parameters to search the database
 // Retrieve results to match query. If no parameters are passed it should return all the results.
 // Should only return the fields necessary 
 
-  res.send("");
-});
 
-router.post("/pets", (req, res) => {
+router.post("/newPet", auth, petController.addPet);
 //   The add pet api is responsible for adding new pets
 // Validate all the user input is valid
 // Handle photo upload
-// Store pet information in the database
 
-  res.send("");
-});
 
-router.get("/pets/:id", (req, res) => {
+
+
+router.get("/:id", petController.getPetById);
   // Get a pet by ID should take an id and return the corresponding pet from the database. 
-  res.send("");
-});
-router.put("/pets/:id",(req,res)=>{
-//   The add pet api is responsible for editing pets
-// Validate all the user input is valid
-// Handle photo upload
-// Store pet information in the database
-
-  res.send('')
-})
+ 
 router.post("/pets/:id/adopt", (req, res) => {
 //   The Adopt/Foster API is responsible for adding the pet to the current users pets.
 // This API also should change the pet’s adoption status. 
@@ -54,8 +44,8 @@ router.post("/pets/:id/save",(req,res)=>{
 
   res.send("")
 });
-router.delete("/pets/:id/save",(req,res)=>{
+router.delete(":id/save",petController.deletePet)
   // The save PET api allows a user to remove a saved pet.
-  res.send("")
-})
+
+
 module.exports = router;
