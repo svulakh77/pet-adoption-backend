@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const e = require('express');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const cloudinary = require('cloudinary').v2;
@@ -55,8 +54,8 @@ const hashPwd = (req, res, next) => {
 
 const auth = (req, res, next) => {
   console.log(req.headers.authorization);
-  console.log(req.headers)
-  if (!req.headers.authorization) {
+  // console.log(req.headers)
+  if (!req.body.headers.authorization) {
     res.status(401).send('Missing token');
     return;
   }
@@ -93,12 +92,17 @@ cloudinary.config({
 
 
   const generateUrl = (req, res, next) => {
-    console.log(req.file.filename)
-    const pic = `http://localhost:8080/${req.file.filename}`
-    req.body.pic = pic;
+    // console.log(req.file.filename)
+    // const pic = `http://localhost:8080/${req.file.filename}`
+    // req.body.pic = pic;
 
-
+    console.log("url path",req.file.path)
     next()
-
+}
+  const heightMeasure=(req,res,next)=>{
+    const {height}=req.body;
+    if (height<=10){
+      
+    }
   }
-module.exports = { passwordsMatch, isNewUser, hashPwd, auth, isNoNewUser};
+module.exports = { passwordsMatch, upload, isNewUser, hashPwd, auth, isNoNewUser, generateUrl};

@@ -1,6 +1,8 @@
 const express = require("express");
 const dbConnection = require('./knex/knex');
 const app = express();
+app.use(express.static('images'))
+
 
 
 

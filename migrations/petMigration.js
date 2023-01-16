@@ -3,7 +3,7 @@ exports.up = function (knex) {
       table.increments('id').primary();
       table.string('type').notNull();
       table.string('petName').notNull();
-      table.enu('adoptionStatus', ['Adopted', 'Fostered', 'Availible']).notNullable().default('Availible')
+      table.enu('adoptionStatus', ['Adopted', 'Fostered', 'Availible']).notNullable().default('Availible');
       table.string('pic').notNull();
       table.integer('height').notNull();
       table.integer('weight').notNull();
@@ -12,6 +12,7 @@ exports.up = function (knex) {
       table.boolean('hypoallergenic');
       table.string('dietaryRestrictions').notNull();
       table.string('breed').notNull();
+      table.integer('ownerId').notNull().default(0);
       table.timestamp('dateCreated').defaultTo(knex.fn.now());
     });
   };

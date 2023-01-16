@@ -4,14 +4,15 @@ const petController = require("../controllers/petsController")
 const router = express.Router();
 const {upload,auth,generateUrl}=require("../middleware/middleware")
 
-router.get("/", petController.getAllPets);
+router.get("/search/basic", petController.basicSearchPet);
 //   The get pets API is responsible for retrieving pets that match the criteria given.
 // Can receive query parameters to search the database
 // Retrieve results to match query. If no parameters are passed it should return all the results.
 // Should only return the fields necessary 
+router.get("/search/advanced",petController.advancedSearched);
+router.get("/",petController.getAllPets);
 
-
-router.post("/newPet", auth, petController.addPet);
+router.post("/newPet", upload.single('pic'), generateUrl,petController.addPet);
 //   The add pet api is responsible for adding new pets
 // Validate all the user input is valid
 // Handle photo upload
