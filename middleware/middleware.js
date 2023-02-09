@@ -53,14 +53,14 @@ const hashPwd = (req, res, next) => {
 
 
 const auth = (req, res, next) => {
-  console.log(req.headers.authorization);
-  // console.log(req.headers)
-  if (!req.body.headers.authorization) {
-    res.status(401).send('Missing token');
+  console.log(req.body)
+  if(!req.cookies.token) {
+    
+    res.status(401).send('Must have access token')
     return;
   }
-  const token = req.headers.authorization.replace('Bearer ', '');
-  jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
+
+  jwt.verify(req.cookies.token, process.env.JWT_KEY, (err, decoded) => {
     if (err) {
       res.status(401).send('Unauthorized');
       return;
@@ -68,7 +68,9 @@ const auth = (req, res, next) => {
 
     if (decoded) {
       req.body.userId = decoded.id;
+      req.body.ownerId = decoded.id
       next();
+      return
     }
   });
 };
@@ -99,10 +101,6 @@ cloudinary.config({
     console.log("url path",req.file.path)
     next()
 }
-  const heightMeasure=(req,res,next)=>{
-    const {height}=req.body;
-    if (height<=10){
-      
-    }
-  }
+
+  
 module.exports = { passwordsMatch, upload, isNewUser, hashPwd, auth, isNoNewUser, generateUrl};

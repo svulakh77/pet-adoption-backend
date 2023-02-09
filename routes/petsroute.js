@@ -1,45 +1,29 @@
 const express = require("express");
 const petController = require("../controllers/petsController")
-// const { auth } = require('../middleware/middleware');
 const router = express.Router();
 const {upload,auth,generateUrl}=require("../middleware/middleware")
 
 router.get("/search/basic", petController.basicSearchPet);
-//   The get pets API is responsible for retrieving pets that match the criteria given.
-// Can receive query parameters to search the database
-// Retrieve results to match query. If no parameters are passed it should return all the results.
-// Should only return the fields necessary 
+
 router.get("/search/advanced",petController.advancedSearched);
 router.get("/",petController.getAllPets);
 
-router.post("/newPet", upload.single('pic'), generateUrl,petController.addPet);
-//   The add pet api is responsible for adding new pets
+router.get("/saves/:ownerId",petController.joinSavedPets)
+
+router.post("/newPet", auth, upload.single('pic'), generateUrl,petController.addPet);
 // Validate all the user input is valid
-// Handle photo upload
+
 
 
 
 
 router.get("/:id", petController.getPetById);
-  // Get a pet by ID should take an id and return the corresponding pet from the database. 
  
-router.post("/pets/:id/adopt", (req, res) => {
-//   The Adopt/Foster API is responsible for adding the pet to the current users pets.
-// This API also should change the pet’s adoption status. 
+router.put("/:id/adopt", auth, petController.changePetStatus);
 
-// Field: 
-// Type (Adopt or foster)
+router.put("/:id/return",petController.returnPet);
 
-  res.send("");
-});
-router.post("/pets/:id/return",(req,res)=>{
-//   The Return Pet API is responsible for returning the pet to the agency. 
-// The API should change the pets status back to available
-// The API should remove the pet from the users pets.
-
-  res.send("")
-});
-router.post("/pets/:id/save",(req,res)=>{
+router.post("/:id/save",(req,res)=>{
 //   The save PET api allows a user to save a pet for later
 // The saved pet should be stored as saved in the users account
 
@@ -47,6 +31,6 @@ router.post("/pets/:id/save",(req,res)=>{
 });
 router.delete(":id/save",petController.deletePet)
   // The save PET api allows a user to remove a saved pet.
-
-
+router.get("/user/:ownerId",auth, petController.getPetsByUserId)
+// This api allows a user to get the pets owned by (or saved) by a user based on the user id.
 module.exports = router;

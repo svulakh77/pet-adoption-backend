@@ -37,9 +37,12 @@ const addNewUser = async (req, res) => {
       ...req.body,
       id: id,
     }
-    const token = jwt.sign({ newUser: newUser }, process.env.JWT_KEY, {
-        expiresIn: "1h",
-      });
+    // const token = jwt.sign({ newUser: newUser }, process.env.JWT_KEY, {
+    //     expiresIn: "1h",
+    //   });
+      const token = jwt.sign({ id: user.id }, process.env.JWT_KEY, { expiresIn: '1h' });
+      res.cookie('token', token, { maxAge: 86000000, httpOnly: true });
+      res.send({ok: true, userId: user.id });
       newUser .token = token;
 
       console.log("TOKEN", token, newUser );
@@ -83,25 +86,29 @@ const getUser = async (req, res) => {
 };
 const loginUser = async (req, res) => {
   const { password, user } = req.body;
-  console.log("loginUser: ", req.body);
-  console.log("pass: ", password);
-  console.log("key: ", user.password);
+  console.log(req.body)
   try {
     bcrypt.compare(password, user.password, (err, result) => {
       if (err) {
         res.status(500).send(err);
       } else if (!result) {
         res.status(400).send("Passwords don't match");
-      } else {
-        const token = jwt.sign({ id: user.id }, process.env.JWT_KEY, {
-          expiresIn: "1h",
-        });
-        user.token = token;
+      // } else {
+      //   const token = jwt.sign({ id: user.id }, process.env.JWT_KEY, {
+      //     expiresIn: "1h",
+      //   });
+      //   user.token = token;
+      }else {
+          const token = jwt.sign({ id: user.id }, process.env.JWT_KEY, { expiresIn: '1h' });
+          res.cookie('token', token, { maxAge: 86000000, httpOnly: true });
+          res.send({ok: true, userId: user.id,token: token, user: user });
+          console.log("TOKEN", token, user);
+        // res.send({ token: token, user: user });
+        }
 
-        console.log("TOKEN", token, user);
-        res.send({ token: token, user: user });
-      }
-    });
+        
+      })
+    
   } catch (err) {
     console.log(err);
     res.status(500).send(err);

@@ -4,9 +4,22 @@ const {
   addPetModel,
   getPetByIdModel,
   getSearchPetModel,
-  getAdvancedSearchPetModel
+  getAdvancedSearchPetModel,
+  adoptionStatusPetModel,
+  returnPetModel,
+  getPetsbyUserIdModel,
+  joinSavedandPetsModel
 } = require("../models/petModel");
-
+const joinSavedPets=async(req,res)=>{
+  try{
+  const ownerId = req.params
+  const joinedPets = await joinSavedandPetsModel(ownerId)
+  console.log("hi",joinedPets)
+  res.send(joinedPets)
+  }catch(err){
+    console.log(err)
+  }
+}
 const deletePet = async (req, res) => {
   const { petId } = req.params;
   const deleted = await deletePetModel(petId);
@@ -15,12 +28,12 @@ const deletePet = async (req, res) => {
   }
 };
 const basicSearchPet = async (req, res) => {
+  console.log("FIRST REQ", req.query.type);
+  console.log(req.query)
   try {
-    let petTypes = req.query["type"];
-    if (!petTypes) {
-      petTypes = ["cat", "dog", "bird"];
-    }
-    const basicSearched = await getSearchPetModel(petTypes);
+    let petType = req.query.type
+    console.log(petType)
+    const basicSearched = await getSearchPetModel(petType);
     res.send(basicSearched);
   } catch (err) {
     console.log(err);
@@ -33,7 +46,7 @@ const advancedSearched = async (req, res) => {
     let upperHeight = 1000;
     let lowerWeight = 0;
     let upperWeight = 1000;
-    
+
     let petTypes = req.query["type"];
     if (!petTypes) {
       petTypes = ["cat", "dog", "bird", "fish"];
@@ -72,6 +85,8 @@ const advancedSearched = async (req, res) => {
       petAdoptionStatus = ["Availible","Fostered","Adopted"]
     }
     let petName = req.query["petName"];
+    console.log("parameters",req.params
+    )
     if (!petName) {
       petName = null;
     }
@@ -124,10 +139,51 @@ const getPetById = async (req, res) => {
 
     const gotPet = await getPetByIdModel(id);
     res.send(gotPet);
+  
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
   }
 };
-
-module.exports = { deletePet, addPet, getAllPets, getPetById, basicSearchPet,advancedSearched };
+const getPetsByUserId = async(req,res)=>{
+  try {
+    const {ownerId}=req.params;
+    const gotPetFromOwner = await getPetsbyUserIdModel(ownerId)
+    console.log(ownerId)
+    res.send(gotPetFromOwner)
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error)
+  }
+}
+const changePetStatus = async(req,res)=>{
+  try {
+    const body = req.body
+    console.log(body)
+    const id = await adoptionStatusPetModel(body);
+    const statusChange = {
+      ...req.body,
+      id:req.body.petId
+    }
+    res.send(statusChange);
+}catch(err){
+  console.log(err)
+  res.status(500).send(err);
+}
+}
+const returnPet = async(req,res)=>{
+  try {
+    const body = req.body
+    console.log(body)
+    const id = await returnPetModel(body);
+    const statusChange = {
+      ...req.body,
+      id:req.body.petId
+    }
+    res.send(statusChange);
+}catch(err){
+  console.log(err)
+  res.status(500).send(err);
+}
+}
+module.exports = { deletePet, addPet, getAllPets, getPetById, basicSearchPet,advancedSearched,changePetStatus,returnPet, getPetsByUserId,joinSavedPets};

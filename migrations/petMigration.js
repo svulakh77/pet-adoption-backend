@@ -3,7 +3,7 @@ exports.up = function (knex) {
       table.increments('id').primary();
       table.string('type').notNull();
       table.string('petName').notNull();
-      table.enu('adoptionStatus', ['Adopted', 'Fostered', 'Availible']).notNullable().default('Availible');
+      table.string('adoptionStatus').notNullable().default('Available');
       table.string('pic').notNull();
       table.integer('height').notNull();
       table.integer('weight').notNull();

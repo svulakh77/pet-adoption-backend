@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const pathToPetsDB = path.resolve(__dirname, "../petAdoption/pets.json");
+const pathToSavesDB = path.resolve(__dirname, "../petAdoption/saves.json");
 const dbConnection = require("../knex/knex");
 
 async function readAllPetsModel() {
@@ -11,6 +12,15 @@ async function readAllPetsModel() {
     console.log(err);
   }
 }
+async function joinSavedandPetsModel(ownerId){
+  try {
+    const joinPetsSaved = await dbConnection.from("saves").join("pets","pets.ownerId","saves.ownerId").select("*").where("saves.ownerId",ownerId)
+    console.log("hi",joinPetsSaved)
+    return joinPetsSaved
+  } catch (error) {
+    
+  }
+}
 async function getPetByIdModel(petId) {
   try {
     const fetchedPet = await dbConnection.from("pets").where({ id: petId });
@@ -19,13 +29,21 @@ async function getPetByIdModel(petId) {
     console.log(err);
   }
 }
+async function getPetsbyUserIdModel(userId){
+  try {
+    const petByUser = await dbConnection.from("pets").where({ownerId:userId})
+    
+    return petByUser
+  } catch (error) {
+    console.log(error)
+  }
+}
 async function getSearchPetModel(selectedPets) {
   try {
-    console.log("hi");
     console.log(selectedPets);
     const searchedPet = await dbConnection
       .from("pets")
-      .whereIn("type", selectedPets);
+      .where("type", selectedPets);
     return searchedPet;
   } catch (err) {
     console.log(err);
@@ -86,12 +104,41 @@ async function deletePetModel(petId) {
     console.log(err);
   }
 }
-
+async function adoptionStatusPetModel(body) {
+  const { id, ownerId, adoptionStatus } = body;
+  try {
+    const adopted = await dbConnection
+      .from("pets")
+      .where({ id: id })
+      .update({ adoptionStatus: adoptionStatus, ownerId: ownerId });
+      console.log(adopted);
+      return adopted
+  } catch (error) {
+    console.log(error);
+  }
+}
+async function returnPetModel(body){
+  const { id } = body;
+  try {
+    const returned = await dbConnection
+      .from("pets")
+      .where({ id: id })
+      .update({ adoptionStatus: "Available", ownerId: 0 });
+      console.log(returned);
+      return returned
+  } catch (error) {
+    console.log(error);
+  }
+}
 module.exports = {
   readAllPetsModel,
   addPetModel,
   deletePetModel,
   getPetByIdModel,
   getSearchPetModel,
-  getAdvancedSearchPetModel
+  getAdvancedSearchPetModel,
+  adoptionStatusPetModel,
+  returnPetModel,
+  getPetsbyUserIdModel,
+  joinSavedandPetsModel
 };
